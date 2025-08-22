@@ -1,11 +1,9 @@
 apiGateway:
-  # (opcional) crea una API Key administrada por Serverless
   apiKeys:
     - name: ${self:service}-${sls:stage}-key
-  # Usage plan global (NO por ruta aquí)
   usagePlan:
     quota:
-      limit: 10000      # al mes, por defecto
+      limit: 10000 
       period: MONTH
     throttle:
       burstLimit: 20

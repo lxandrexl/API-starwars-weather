@@ -10,6 +10,7 @@ import {
   RespondToAuthChallengeCommandInput,
 } from '@aws-sdk/client-cognito-identity-provider';
 import { ChallengeMfa, ChallengeNewPassword, IAuthDAO, Login, LoginResult } from '../utils/interfaces';
+import { cognito } from 'core'; // en DAO de Cognito
 
 const {
   APP_REGION,
@@ -19,7 +20,7 @@ const {
 
 @injectable()
 export class AuthDAO implements IAuthDAO {
-  private client = new CognitoIdentityProviderClient({ region: APP_REGION });
+  private client = cognito  as CognitoIdentityProviderClient;
 
   async login(payload: Login): Promise<LoginResult> {
     const input: InitiateAuthCommandInput = {

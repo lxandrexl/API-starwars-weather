@@ -23,7 +23,11 @@ provider:
   environment:
     NODE_PATH: ./:/opt/nodejs/node_modules
     AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1'
+    AWS_XRAY_CONTEXT_MISSING: LOG_ERROR
   logRetentionInDays: 7
+  tracing:
+    lambda: Active
+    apiGateway: true
   logs: ${file(./infrastructure/apigateway/logs.yml):logs}
   apiGateway: ${file(./infrastructure/apigateway/usage-plan.yml):apiGateway}
 custom:

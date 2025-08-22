@@ -1,11 +1,11 @@
 import { injectable } from 'inversify';
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { DynamoDBDocumentClient, GetCommand, PutCommand, QueryCommand } from '@aws-sdk/lib-dynamodb';
+import { PutCommand, QueryCommand } from '@aws-sdk/lib-dynamodb';
 import { IStorageDAO } from '../utils/interfaces';
+import { ddbDoc } from 'core';
 
 @injectable()
 export class StorageDAO implements IStorageDAO {
-  private ddb = DynamoDBDocumentClient.from(new DynamoDBClient({}));
+  private ddb = ddbDoc;
   private fusionTable = process.env.FUSION_TABLE!;
   private almacenadosTable = process.env.ALMACENADOS_TABLE!;
   private idx   = 'PlanetIdIndex';

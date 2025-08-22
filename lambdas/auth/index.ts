@@ -1,7 +1,10 @@
 import 'reflect-metadata';
+import { bootstrapXRay } from 'core/utils/xray-bootstrap';
 import type { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { HttpMethods, FindRoute, type Route } from 'core';
 import * as API from './src';
+
+bootstrapXRay();
 
 const routes: Route<APIGatewayProxyEvent, APIGatewayProxyResult>[] = [
   {

@@ -57,7 +57,7 @@ Resources:
   AuthLambdaRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: AuthLambdaRole${self:custom.version}   
+      RoleName: AuthLambdaRole${self:custom.version}
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
         Statement:
@@ -92,6 +92,11 @@ Resources:
               - cognito-idp:AdminInitiateAuth
             Resource:
               - !GetAtt CognitoPoolLogin.Arn
+          - Action:
+              - xray:PutTraceSegments
+              - xray:PutTelemetryRecords
+            Effect: Allow
+            Resource: "*"
       Roles:
         - !Ref AuthLambdaRole
       

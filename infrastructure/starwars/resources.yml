@@ -30,6 +30,11 @@ Resources:
               - dynamodb:Query
             Effect: Allow
             Resource: "*"
+          - Action:
+              - xray:PutTraceSegments
+              - xray:PutTelemetryRecords
+            Effect: Allow
+            Resource: "*"
       Roles:
         - !Ref StarwarsLambdaRole
 
