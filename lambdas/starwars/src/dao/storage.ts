@@ -1,0 +1,51 @@
+import { injectable } from 'inversify';
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { DynamoDBDocumentClient, GetCommand, PutCommand, QueryCommand } from '@aws-sdk/lib-dynamodb';
+import { IStorageDAO } from '../utils/interfaces';
+
+@injectable()
+export class StorageDAO implements IStorageDAO {
+  private ddb = DynamoDBDocumentClient.from(new DynamoDBClient({}));
+  private fusionTable = process.env.FUSION_TABLE!;
+  private almacenadosTable = process.env.ALMACENADOS_TABLE!;
+  private idx   = 'PlanetIdIndex';
+  
+  async putHistory(payload: any) {
+    await this.ddb.send(new PutCommand({
+      TableName: this.almacenadosTable,
+      Item: payload,
+    }));
+  }
+
+  async putFusion(data: any, ttlSeconds: number) {
+    const ttl = Math.floor(Date.now() / 1000) + ttlSeconds;
+    const ts = Date.now();
+    const item: any = { pk: 'fusion', sk: ts, ts, payload: data, ttl };
+    await this.ddb.send(new PutCommand({ TableName: this.fusionTable, Item: item }));
+  }
+
+  async getFusionByPlanet(planetId: number) {
+    const r = await this.ddb.send(new QueryCommand({
+      TableName: this.fusionTable,
+      IndexName: this.idx,
+      KeyConditionExpression: 'planetId = :pid',
+      ExpressionAttributeValues: { ':pid': planetId },
+      ScanIndexForward: false,   // más nuevo primero
+      Limit: 1,
+    }));
+    return r.Items?.[0] ?? null; // { pk, sk, planetId, ts, payload, ttl? }
+  }
+
+  async listFusion(limit = 10, nextKey?: { pk: string; sk: number }) {
+    const r = await this.ddb.send(new QueryCommand({
+      TableName: this.fusionTable,
+      KeyConditionExpression: 'pk = :p',
+      ExpressionAttributeValues: { ':p': 'fusion' },
+      ScanIndexForward: false,
+      Limit: limit,
+      ExclusiveStartKey: nextKey as any,
+    }));
+    return { items: r.Items ?? [], nextKey: r.LastEvaluatedKey as any };
+  }
+
+}

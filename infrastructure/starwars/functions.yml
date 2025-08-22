@@ -1,0 +1,42 @@
+FusionadosFn:
+  handler: lambdas/starwars/index.handler
+  name: FusionadosFn${self:custom.version}
+  description: Función lambda para fusionar datos.
+  timeout: 15
+  memorySize: 512
+  package:
+    include:
+      - lambdas/starwars/**
+    exclude:
+      - lambdas/**
+  layers:
+    - !Ref CoreLambdaLayer
+  role: !GetAtt StarwarsLambdaRole.Arn
+  environment:
+    FUSION_TABLE: ${self:custom.FusionTable}
+    ALMACENADOS_TABLE: ${self:custom.AlmacenadosTable}
+  events:
+    - http:
+        path: /starwars/fusionados
+        method: get
+        cors: true
+        authorizer:
+          type: COGNITO_USER_POOLS
+          authorizerId:
+            Ref: ApiGatewayAuthorizer
+    - http:
+        path: /starwars/historial
+        method: get
+        cors: true
+        authorizer:
+          type: COGNITO_USER_POOLS
+          authorizerId:
+            Ref: ApiGatewayAuthorizer
+    - http:
+        path: /starwars/almacenar
+        method: post
+        cors: true
+        authorizer:
+          type: COGNITO_USER_POOLS
+          authorizerId:
+            Ref: ApiGatewayAuthorizer

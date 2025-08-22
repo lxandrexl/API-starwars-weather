@@ -1,0 +1,24 @@
+{
+  "name": "layer-core",
+  "private": true,
+  "dependencies": {
+    "@aws-sdk/client-cognito-identity-provider": "^3.873.0",
+    "@aws-sdk/client-dynamodb": "^3.873.0",
+    "@aws-sdk/lib-dynamodb": "^3.873.0",
+    "core": "file:./@core",
+    "http-status-codes": "^2.3.0",
+    "inversify": "^7.9.0",
+    "joi": "^18.0.1",
+    "path-to-regexp": "^8.2.0",
+    "qs": "^6.14.0",
+    "reflect-metadata": "^0.2.2",
+    "uuid": "^11.1.0"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.152",
+    "@types/http-status-codes": "^1.2.0",
+    "@types/node": "^20.0.0",
+    "@types/qs": "^6.14.0",
+    "typescript": "^5.5.0"
+  }
+}

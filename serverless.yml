@@ -1,0 +1,71 @@
+service: apis
+frameworkVersion: "4.18.1"
+package:
+  excludeDevDependencies: true
+  individually: true
+  patterns:
+    - "!node_modules/**"
+    - "!**/README.md/**"
+    - "!infrastructure/**"
+    - "!./*.json"
+    - "!.*/**"
+    - "!**/*.js"
+    - "!**/*.spec.ts"
+    - "!**/*.test.ts"
+    - "!_layers/**"
+provider:
+  name: aws
+  runtime: nodejs20.x
+  httpApi:
+    payload: '1.0'
+  versionFunctions: false
+  stage: ${opt:stage, 'dev'}
+  region: ${self:custom.regions.code.${self:custom.stage}}
+  apiName: apis
+  environment:
+    NODE_PATH: ./:/opt/nodejs/node_modules
+    AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1'
+custom:
+  name: apis
+  version: -v1
+  stage: ${opt:stage, 'dev'}
+  regions:
+    code:
+      dev: us-east-1
+    stage:
+      dev: dev
+  serverless-offline:
+    httpPort: 4010
+    websocketPort: 4011
+    lambdaPort: 4012
+  logRetentionInDays: 7 # Set global value for all lambdas
+  # DynamoDB
+  AlmacenadosTable: almacenadosTable-${self:custom.stage}${self:custom.version}
+  FusionTable: fusionTable-${self:custom.stage}${self:custom.version}
+build:
+  esbuild:
+    bundle: true
+    minify: false
+    sourcemap: true
+    target: node20
+    tsconfig: ./tsconfig.json
+    external:
+      - core
+      - http-status-codes
+      - inversify
+      - joi
+      - path-to-regexp
+      - qs
+      - reflect-metadata
+      - uuid
+plugins:
+  - serverless-plugin-log-retention
+  - serverless-offline
+  - serverless-iam-roles-per-function
+layers: ${file(./infrastructure/layers.yml)}
+resources:
+  - ${file(./infrastructure/auth/resources.yml)}
+  - ${file(./infrastructure/starwars/resources.yml)}
+functions:
+  - ${file(./infrastructure/auth/functions.yml)}
+  - ${file(./infrastructure/starwars/functions.yml)}

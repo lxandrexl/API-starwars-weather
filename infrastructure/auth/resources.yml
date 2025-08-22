@@ -1,0 +1,97 @@
+Resources:
+  CognitoPoolLogin:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: ${self:custom.name}-cognito-manager
+      UsernameAttributes:
+        - email
+      AutoVerifiedAttributes:
+        - email
+      AdminCreateUserConfig:
+        AllowAdminCreateUserOnly: true
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 8
+          RequireLowercase: false
+          RequireUppercase: false
+          RequireNumbers: false
+          RequireSymbols: false
+      DeletionProtection: INACTIVE
+      MfaConfiguration: OFF
+
+  CognitoPoolClientLogin:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      UserPoolId: !Ref CognitoPoolLogin
+      ClientName: "APIStarwarsClient"
+      GenerateSecret: false
+      EnableTokenRevocation: true
+      PreventUserExistenceErrors: ENABLED
+      ExplicitAuthFlows:
+        - ALLOW_USER_PASSWORD_AUTH
+        - ALLOW_ADMIN_USER_PASSWORD_AUTH
+        - ALLOW_USER_SRP_AUTH
+        - ALLOW_REFRESH_TOKEN_AUTH
+      AccessTokenValidity: 30
+      IdTokenValidity: 60
+      RefreshTokenValidity: 1
+      TokenValidityUnits:
+        AccessToken: minutes
+        IdToken: minutes
+        RefreshToken: days
+      SupportedIdentityProviders:
+        - COGNITO
+
+  ApiGatewayAuthorizer:
+    DependsOn:
+      - ApiGatewayRestApi
+    Type: AWS::ApiGateway::Authorizer
+    Properties:
+      Name: Authorizer_Clients
+      RestApiId: { "Ref" : "ApiGatewayRestApi" }
+      IdentitySource: method.request.header.Authorization
+      Type: COGNITO_USER_POOLS
+      ProviderARNs:
+          - !GetAtt CognitoPoolLogin.Arn
+
+  AuthLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: AuthLambdaRole${self:custom.version}   
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action: sts:AssumeRole
+            Principal:
+              Service: lambda.amazonaws.com
+
+  AuthLambdaPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: AuthLambdaPolicy${self:custom.version}
+      Description: Permisos Cognito para login/registro/challenge
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action:
+              - logs:CreateLogGroup
+              - logs:CreateLogStream
+              - logs:PutLogEvents
+            Resource: "*"
+          - Effect: Allow
+            Action:
+              - cognito-idp:InitiateAuth
+              - cognito-idp:RespondToAuthChallenge
+            Resource: "*"
+          - Effect: Allow
+            Action:
+              - cognito-idp:AdminCreateUser
+              - cognito-idp:AdminSetUserPassword
+              - cognito-idp:AdminInitiateAuth
+            Resource:
+              - !GetAtt CognitoPoolLogin.Arn
+      Roles:
+        - !Ref AuthLambdaRole
+      

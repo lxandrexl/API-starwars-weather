@@ -1,0 +1,31 @@
+AuthFn:
+  handler: lambdas/auth/index.handler
+  name: AuthFn${self:custom.version}
+  description: Función lambda.
+  timeout: 10
+  memorySize: 256
+  package:
+    include:
+      - lambdas/auth/**
+    exclude:
+      - lambdas/**
+  layers:
+    - !Ref CoreLambdaLayer
+  role: !GetAtt AuthLambdaRole.Arn
+  environment:
+    APP_REGION: ${self:provider.region}
+    USER_POOL_ID: !Ref CognitoPoolLogin
+    USER_POOL_CLIENT_ID:   !Ref CognitoPoolClientLogin
+  events:
+    - http:
+        method: POST
+        path: /auth/register
+    - http:
+        method: POST
+        path: /auth/login
+    - http:
+        method: POST
+        path: /auth/challenge/new-password
+    - http:
+        method: POST
+        path: /auth/challenge/mfa

@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "commonjs",
+    "lib": ["ES2020"],
+    "rootDir": ".",
+    "outDir": ".",
+    "strict": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "moduleResolution": "node",
+    "types": ["node", "aws-lambda"],
+    "noEmitOnError": true,
+    "forceConsistentCasingInFileNames": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "useDefineForClassFields": false,
+    "baseUrl": ".",
+    "paths": {
+      "*": ["*", "_layers/core/nodejs/node_modules/*"],
+      "core": ["_layers/core/nodejs/@core"],          // carpeta del paquete
+      "core/*": ["_layers/core/nodejs/@core/*"]
+    },
+    "typeRoots": [
+      "./node_modules/@types",
+      "./_layers/core/nodejs/node_modules/@types"
+    ]
+  },
+  "include": ["lambdas/**/*.ts", "_layers/**/*.ts"],
+  "exclude": ["node_modules", "infrastructure", "docs", "**/*.spec.ts"]
+}

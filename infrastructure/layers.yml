@@ -1,0 +1,16 @@
+Core:
+  path: _layers/core
+  name: Core${self:custom.version}
+  description: Core dependencies
+  compatibleRuntimes:
+    - nodejs20.x
+  package:
+    patterns:
+      - nodejs/**
+      # Excluir TS/tsconfig de cualquier paquete (incl. node_modules/core)
+      - '!nodejs/**/*.ts'
+      - '!nodejs/**/tsconfig.json'
+      - '!nodejs/**/tsconfig.*'
+      - '!nodejs/**/.npmignore'
+      - '!nodejs/**/package-lock.json'
+      - '!nodejs/**/src/**'
