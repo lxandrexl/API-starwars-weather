@@ -4,6 +4,7 @@
   "main": "index.js",
   "scripts": {
     "build:core-layer": "npm -C _layers/core/nodejs ci --include=dev && npm -C _layers/core/nodejs prune --omit=dev",
+    "package": "sls package --aws-profile joshua_dev",
     "deploy": "sls deploy --aws-profile joshua_dev"
   },
   "keywords": [],
