@@ -29,3 +29,24 @@ AuthFn:
     - http:
         method: POST
         path: /auth/challenge/mfa
+
+OpenApiFN:
+  handler: docs/index.handler
+  name: OpenApiFN
+  description: Sirve la documentación OpenAPI
+  package:
+    include:
+      - docs/**
+    exclude:
+      - lambdas/**
+    patterns:
+      - docs/openapi.yml
+  events:
+    - http:
+          path: docs
+          method: get
+          cors: true
+    - http:
+        path: docs/openapi.yml
+        method: get
+        cors: true

@@ -1,0 +1,322 @@
+openapi: "3.0.3"
+info:
+  title: API Starwars + Weather
+  version: "1.0.0"
+  description: Endpoints protegidos con Cognito + utilidades de autenticación.
+
+servers:
+  - url: /{stage}
+    variables:
+      stage:
+        default: dev
+        description: Stage de API Gateway (dev, prod, etc.)
+
+tags:
+  - name: Auth
+    description: Autenticación con Cognito
+  - name: Starwars
+    description: Planetas + clima
+
+paths:
+  /auth/register:
+    post:
+      tags: [Auth]
+      summary: Registrar usuario en Cognito
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterRequest"
+            example:
+              email: "user@example.com"
+              password: "Passw0rd!"
+      responses:
+        "200":
+          description: Usuario creado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OkCreated"
+
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Iniciar sesión (puede devolver NEW_PASSWORD_REQUIRED)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+            example:
+              email: "user@example.com"
+              password: "Passw0rd!"
+      responses:
+        "200":
+          description: Tokens o reto de nueva contraseña
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginResponse"
+
+  /auth/challenge/new-password:
+    post:
+      tags: [Auth]
+      summary: Completar reto NEW_PASSWORD_REQUIRED
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewPasswordRequest"
+      responses:
+        "200":
+          description: Tokens emitidos
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tokens"
+
+  /starwars/almacenar:
+    post:
+      tags: [Starwars]
+      summary: Guardar registro personalizado
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StoreRequest"
+            example:
+              planetId: 2
+              notes: "No me gusta este planeta, hace frío."
+      responses:
+        "200":
+          description: Registro creado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreatedId"
+
+  /starwars/fusionados:
+    get:
+      tags: [Starwars]
+      summary: Obtiene planeta + clima (con cache)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: query
+          name: planetId
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 60
+          description: ID del planeta (1..60)
+      responses:
+        "200":
+          description: Datos fusionados
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FusionadoResult"
+
+  /starwars/historial:
+    get:
+      tags: [Starwars]
+      summary: Lista el historial de fusiones (paginado)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 60
+            default: 10
+          description: Tamaño de página (1..60)
+        - in: query
+          name: nextPk
+          schema:
+            type: string
+          required: false
+          description: Cursor de partición para continuar
+        - in: query
+          name: nextSk
+          schema:
+            type: integer
+          required: false
+          description: Cursor de orden (timestamp)
+      responses:
+        "200":
+          description: Página de historial
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HistorialPage"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    OkCreated:
+      type: object
+      properties:
+        status: { type: string, example: "created" }
+        details:
+          type: object
+          additionalProperties: true
+
+    RegisterRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 6
+
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+
+    NewPasswordRequest:
+      type: object
+      required: [username, newPassword, session]
+      properties:
+        username: { type: string }
+        newPassword: { type: string, minLength: 6 }
+        session: { type: string }
+
+    Tokens:
+      type: object
+      properties:
+        status: { type: string, example: "ok" }
+        details:
+          type: object
+          properties:
+            ok: { type: boolean, example: true }
+            data:
+              type: object
+              properties:
+                accessToken: { type: string }
+                idToken: { type: string }
+                refreshToken: { type: string }
+                expiresIn: { type: integer, example: 1800 }
+                tokenType: { type: string, example: "Bearer" }
+
+    LoginResponse:
+      oneOf:
+        - $ref: "#/components/schemas/Tokens"
+        - type: object
+          properties:
+            status: { type: string, example: "ok" }
+            details:
+              type: object
+              properties:
+                ok: { type: boolean, example: false }
+                data:
+                  type: object
+                  properties:
+                    challenge: { type: string, example: "NEW_PASSWORD_REQUIRED" }
+                    session: { type: string }
+                    parameters:
+                      type: object
+                      additionalProperties: true
+
+    StoreRequest:
+      type: object
+      required: [planetId, notes]
+      properties:
+        planetId:
+          type: integer
+          minimum: 1
+          maximum: 60
+        notes:
+          type: string
+          maxLength: 500
+
+    CreatedId:
+      type: object
+      properties:
+        status: { type: string, example: "created" }
+        details:
+          type: object
+          properties:
+            id: { type: string, example: "2eb7e841-f5a4-4c3e-845c-c82024c832fa" }
+
+    WeatherNow:
+      type: object
+      properties:
+        temperature: { type: number, example: 28.7 }
+        windspeed: { type: number, example: 13 }
+        time: { type: string, example: "2025-08-22T14:45:00Z" }
+
+    FusionadoPayload:
+      type: object
+      properties:
+        id: { type: integer, example: 25 }
+        name: { type: string, example: "Dantooine" }
+        climate: { type: string, example: "temperate" }
+        terrain: { type: string, example: "oceans, savannas, mountains, grasslands" }
+        population: { type: string, example: "1000" }
+        weather: { $ref: "#/components/schemas/WeatherNow" }
+        source:
+          type: object
+          properties:
+            planetUrl: { type: string, example: "https://swapi.info/api/planets/25" }
+
+    FusionadoResult:
+      type: object
+      properties:
+        status: { type: string, example: "ok" }
+        cached: { type: boolean, example: true }
+        details:
+          type: object
+          properties:
+            payload: { $ref: "#/components/schemas/FusionadoPayload" }
+            planetId: { type: integer, example: 25 }
+            ttl: { type: integer, example: 1755875897 }
+            sk: { type: integer, example: 1755875897 }
+            pk: { type: string, example: "fusion" }
+
+    HistorialItem:
+      type: object
+      properties:
+        ts: { type: integer, example: 1755875897123 }
+        date: { type: string, example: "2025-08-22T14:46:21.273Z" }
+        name: { type: string, example: "Nal Hutta" }
+        climate: { type: string, example: "temperate" }
+        population: { type: string, example: "7000000000" }
+        terrain: { type: string, example: "urban, oceans, swamps, bogs" }
+        weather: { $ref: "#/components/schemas/WeatherNow" }
+        source:
+          type: object
+          properties:
+            planetUrl: { type: string, example: "https://swapi.info/api/planets/24" }
+
+    HistorialPage:
+      type: object
+      properties:
+        status: { type: string, example: "ok" }
+        details:
+          type: object
+          properties:
+            items:
+              type: array
+              items: { $ref: "#/components/schemas/HistorialItem" }
+            nextPk: { type: string, nullable: true, example: "fusion" }
+            nextSk: { type: integer, nullable: true, example: 1755875897123 }

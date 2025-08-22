@@ -27,6 +27,6 @@
       "./_layers/core/nodejs/node_modules/@types"
     ]
   },
-  "include": ["lambdas/**/*.ts", "_layers/**/*.ts"],
-  "exclude": ["node_modules", "infrastructure", "docs", "**/*.spec.ts"]
+  "include": ["lambdas/**/*.ts", "_layers/**/*.ts", "docs/**/*.ts"],
+  "exclude": ["node_modules", "infrastructure", "**/*.spec.ts"]
 }

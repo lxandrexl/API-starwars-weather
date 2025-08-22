@@ -11,6 +11,8 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
+    "@types/aws-lambda": "^8.10.152",
+    "@types/node": "^24.3.0",
     "jest": "^30.0.5",
     "jest-runner-groups": "^2.2.0",
     "serverless-offline": "^14.4.0",
