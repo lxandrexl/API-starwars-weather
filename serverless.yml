@@ -49,19 +49,9 @@ build:
     sourcemap: true
     target: node20
     tsconfig: ./tsconfig.json
-    external:
-      - core
-      - http-status-codes
-      - inversify
-      - joi
-      - path-to-regexp
-      - qs
-      - reflect-metadata
-      - uuid
 plugins:
   - serverless-plugin-log-retention
   - serverless-offline
-  - serverless-iam-roles-per-function
 layers: ${file(./infrastructure/layers.yml)}
 resources:
   - ${file(./infrastructure/auth/resources.yml)}

@@ -3,22 +3,16 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "deploy": "npm run layer:install && serverless deploy"
+    "build:core-layer": "npm -C _layers/core/nodejs ci --include=dev && npm -C _layers/core/nodejs prune --omit=dev",
+    "deploy": "sls deploy --aws-profile joshua_dev"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "devDependencies": {
-    "@serverless/event-mocks": "^1.1.1",
-    "@types/aws-lambda": "^8.10.152",
-    "@types/aws-sdk": "^0.0.42",
-    "@types/node": "^24.3.0",
-    "dotenv": "^17.2.1",
     "jest": "^30.0.5",
     "jest-runner-groups": "^2.2.0",
-    "serverless-esbuild": "^1.55.1",
-    "serverless-iam-roles-per-function": "^3.2.0",
     "serverless-offline": "^14.4.0",
     "serverless-plugin-log-retention": "^2.1.0",
     "ts-jest": "^29.4.1",

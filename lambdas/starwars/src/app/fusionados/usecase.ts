@@ -41,7 +41,7 @@ export class FusionadosUseCase implements IUseCase<any, any> {
             weather, 
             source: { planetUrl: result.url ?? "" },
         };
-        await this._storageDAO.putFusion(data, 60 * 30); // 30 min
+        await this._storageDAO.putFusion(planetId, data, 60 * 30); // 30 min
 
         return { status: ReasonPhrases.OK.toLowerCase(), cached: false, details: data };
     } catch (error) {

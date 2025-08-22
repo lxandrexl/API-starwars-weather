@@ -17,10 +17,10 @@ export class StorageDAO implements IStorageDAO {
     }));
   }
 
-  async putFusion(data: any, ttlSeconds: number) {
+  async putFusion(planetId: number,data: any, ttlSeconds: number) {
     const ttl = Math.floor(Date.now() / 1000) + ttlSeconds;
     const ts = Date.now();
-    const item: any = { pk: 'fusion', sk: ts, ts, payload: data, ttl };
+    const item: any = { pk: 'fusion', sk: ts, planetId, payload: data, ttl };
     await this.ddb.send(new PutCommand({ TableName: this.fusionTable, Item: item }));
   }
 
@@ -30,10 +30,10 @@ export class StorageDAO implements IStorageDAO {
       IndexName: this.idx,
       KeyConditionExpression: 'planetId = :pid',
       ExpressionAttributeValues: { ':pid': planetId },
-      ScanIndexForward: false,   // más nuevo primero
+      ScanIndexForward: false, 
       Limit: 1,
     }));
-    return r.Items?.[0] ?? null; // { pk, sk, planetId, ts, payload, ttl? }
+    return r.Items?.[0] ?? null;
   }
 
   async listFusion(limit = 10, nextKey?: { pk: string; sk: number }) {

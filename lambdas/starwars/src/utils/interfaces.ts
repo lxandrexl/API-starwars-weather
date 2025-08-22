@@ -8,7 +8,7 @@ export interface IWeatherDAO {
 
 export interface IStorageDAO {
   putHistory(payload: any): Promise<void>;
-  putFusion(data: any, ttlSeconds: number): Promise<void>;
+  putFusion(planetId: number, data: any, ttlSeconds: number): Promise<void>;
   getFusionByPlanet(planetId: number): Promise<any | null>;
   listFusion(limit?: number, nextKey?: { pk: string; sk: number }): Promise<{ items: any[]; nextKey?: { pk: string; sk: number } }>;
 }
