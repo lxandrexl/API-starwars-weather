@@ -3,6 +3,7 @@ import { IUseCase } from "./UseCase";
 import { InternalError, UnprocessableEntityError } from "./exception";
 import { Container } from "inversify";
 import * as Qs from "qs";
+import { logger } from "../utils/logger";
 
 export enum InputProcess {
   BODY,
@@ -108,7 +109,8 @@ export class ContainerController {
   }
 
   async call(event: any) {
-    console.log("Input -->", JSON.stringify(event));
+    const reqId = event.requestContext?.requestId;
+    logger.info({ reqId, path: event.path, qs: event.queryStringParameters }, "request in");
     const securityHeaders = {
       'X-Content-Type-Options': 'nosniff',
       'X-XSS-Protection': '1; mode=block',
@@ -149,6 +151,7 @@ export class ContainerController {
       }
       const instance = this._container.get<IUseCase<any, any>>(this._symbol);
       const result = await instance.execute(request);
+      logger.info({ reqId, resultCount: 1 }, "request ok");
 
       if (this._responseBody) {
         return {
@@ -164,6 +167,7 @@ export class ContainerController {
         return result;
       }
     } catch (e: any) {
+      logger.error({ reqId, err: e?.message, stack: e?.stack }, "request error");
       const error = typeof e.render === "function" ? e.render() : null;
       if (this._interceptor) {
         return this._interceptor(error ?? e);

@@ -17,7 +17,6 @@ export class FusionadosUseCase implements IUseCase<any, any> {
   async execute(req: Request<unknown, any, Q>) {
     try {
         const planetId = Number(req.query?.planetId ?? 0);
-        console.log('Entro', planetId);
 
         if (!Number.isInteger(planetId) || planetId< 1 || planetId > 60) {
         return { status: 'bad_request', details: { message: 'planetId debe ser número entre 1 y 60' } };

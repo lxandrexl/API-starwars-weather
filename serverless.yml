@@ -25,6 +25,18 @@ provider:
   environment:
     NODE_PATH: ./:/opt/nodejs/node_modules
     AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1'
+  logs:
+    restApi:
+      accessLogging: true
+      executionLogging: true
+      fullExecutionData: true
+      level: INFO
+      format: >-
+        {"requestId":"$context.requestId","ip":"$context.identity.sourceIp",
+        "requestTime":"$context.requestTime","httpMethod":"$context.httpMethod",
+        "resourcePath":"$context.resourcePath","status":$context.status,
+        "protocol":"$context.protocol","responseLength":"$context.responseLength"}
+  logRetentionInDays: 7
 custom:
   name: apis
   version: -v1
@@ -38,7 +50,6 @@ custom:
     httpPort: 4010
     websocketPort: 4011
     lambdaPort: 4012
-  logRetentionInDays: 7 # Set global value for all lambdas
   # DynamoDB
   AlmacenadosTable: almacenadosTable-${self:custom.stage}${self:custom.version}
   FusionTable: fusionTable-${self:custom.stage}${self:custom.version}
@@ -50,7 +61,6 @@ build:
     target: node20
     tsconfig: ./tsconfig.json
 plugins:
-  - serverless-plugin-log-retention
   - serverless-offline
 layers: ${file(./infrastructure/layers.yml)}
 resources:
