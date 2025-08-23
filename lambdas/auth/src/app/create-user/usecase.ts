@@ -1,4 +1,4 @@
-import { IUseCase, Request } from "core";
+import { InvalidRequest, IUseCase, Request } from "core";
 import { ReasonPhrases } from "http-status-codes";
 import { inject, injectable } from "inversify";
 import { IAuthDAO, Login } from "../../utils/interfaces";
@@ -10,6 +10,9 @@ export class CreateUserUseCase implements IUseCase<any, any> {
 
   async execute(req: Request<Login>) {
     const { input } = req;
+    if (!input || !input.email || !input.password) {
+      throw new InvalidRequest(new Error("Faltan parámetros obligatorios"));
+    }
     const result = await this._authDAO.createUser(input);
     return { status: ReasonPhrases.CREATED.toLowerCase(), details: result };
   }

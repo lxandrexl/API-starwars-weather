@@ -43,7 +43,6 @@ describe("CreateUserUseCase", () => {
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ email: "existe@b.com", password: "Xyz11234" }),
     });
-    const res = await CreateUser(event);
     const errorResponse = {
       error: {
         code: "IE",
@@ -53,6 +52,7 @@ describe("CreateUserUseCase", () => {
       },
       payload: null,
     };
+    const res = await CreateUser(event);
 
     expect(res.statusCode).toBe(500);
     expect(res.body).toBe(JSON.stringify(errorResponse));
