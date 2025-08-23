@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "*": ["*", "_layers/core/nodejs/node_modules/*"],
+      "core": ["_layers/core/nodejs/@core/index"],
+      "core/*": ["_layers/core/nodejs/@core/*"]
+    }
+  }
+}

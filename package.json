@@ -8,7 +8,8 @@
     "deploy": "sls deploy --aws-profile joshua_dev",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:cov": "jest --coverage"
+    "test:cov": "jest --coverage",
+    "bdd": "cross-env TS_NODE_PROJECT=tsconfig.cucumber.json NODE_PATH=./_layers/core/nodejs/node_modules cucumber-js"
   },
   "keywords": [],
   "author": "",
@@ -17,6 +18,7 @@
   "devDependencies": {
     "@aws-sdk/client-cognito-identity-provider": "^3.873.0",
     "@aws-sdk/lib-dynamodb": "^3.873.0",
+    "@cucumber/cucumber": "^12.2.0",
     "@serverless/event-mocks": "^1.1.1",
     "@types/aws-lambda": "^8.10.152",
     "@types/jest": "^30.0.0",
@@ -29,6 +31,7 @@
     "serverless-offline": "^14.4.0",
     "ts-jest": "^29.4.1",
     "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^5.9.2"
   }
 }
