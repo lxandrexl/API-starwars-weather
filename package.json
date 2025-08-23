@@ -6,10 +6,12 @@
     "build:core-layer": "npm -C _layers/core/nodejs ci --include=dev && npm -C _layers/core/nodejs prune --omit=dev",
     "package": "sls package --aws-profile joshua_dev",
     "deploy": "sls deploy --aws-profile joshua_dev",
+    "remove": "sls remove --aws-profile joshua_dev",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
-    "bdd": "cross-env TS_NODE_PROJECT=tsconfig.cucumber.json NODE_PATH=./_layers/core/nodejs/node_modules cucumber-js"
+    "bdd": "cross-env TS_NODE_PROJECT=tsconfig.cucumber.json NODE_PATH=./_layers/core/nodejs/node_modules cucumber-js",
+    "documentation": "node tools/swagger.js"
   },
   "keywords": [],
   "author": "",
@@ -26,12 +28,16 @@
     "@types/qs": "^6.14.0",
     "aws-sdk-client-mock": "^4.1.0",
     "cross-env": "^10.0.0",
+    "express": "^5.1.0",
     "jest": "^30.0.5",
+    "open": "^10.2.0",
     "prettier": "^3.6.2",
     "serverless-offline": "^14.4.0",
+    "swagger-ui-express": "^5.0.1",
     "ts-jest": "^29.4.1",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.2",
+    "yamljs": "^0.3.0"
   }
 }

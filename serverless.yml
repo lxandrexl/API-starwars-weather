@@ -13,8 +13,9 @@ package:
     - "!**/*.spec.ts"
     - "!**/*.test.ts"
     - "!_layers/**"
-    - '!**/__tests__/**'
-    - '!tests/**'
+    - "!**/__tests__/**"
+    - "!tests/**"
+    - "!tools/**"
 provider:
   name: aws
   runtime: nodejs20.x
@@ -24,7 +25,7 @@ provider:
   apiName: apis
   environment:
     NODE_PATH: ./:/opt/nodejs/node_modules
-    AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1'
+    AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1"
     AWS_XRAY_CONTEXT_MISSING: LOG_ERROR
   logRetentionInDays: 7
   tracing:
