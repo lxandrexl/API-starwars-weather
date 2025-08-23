@@ -19,6 +19,7 @@ describe('CreateUserUseCase', () => {
       body: JSON.stringify({ email: 'a@b.com', password: 'Xyz11234' }),
     });
     const res = await CreateUser(event);
+    
     expect(res.statusCode).toBe(200);
     expect(res.body).toBe(JSON.stringify({ status: 'created', details: {User: { Username: 'u'}} }));
     //expect(dao.createUser).toHaveBeenCalledWith({ email: 'a@b.com', password: 'XyZ!1234' });

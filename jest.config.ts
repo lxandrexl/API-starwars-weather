@@ -17,6 +17,7 @@ const config: Config = {
     '^core(.*)$': '<rootDir>/_layers/core/nodejs/@core$1',
     // 👇 alias corto para importar mocks desde los specs
     '^@mocks/(.*)$': '<rootDir>/tests/__mocks__/$1',
+    '^core/utils/logger$': '<rootDir>/tests/__mocks__/__core/logger.ts',
   },
 
   transform: {
