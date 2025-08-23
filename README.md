@@ -251,7 +251,7 @@ npm run documentation
 
 Se abrirá automáticamente: **http://localhost:8080/docs**
 
-![Swagger UI ejemplo](`tools/images/swagger.png`)
+![Swagger UI ejemplo](tools/images/swagger.png)
 
 ---
 
