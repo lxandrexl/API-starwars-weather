@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "types": ["jest", "node"],
+    "noEmit": true
+  },
+  "include": [
+    "lambdas/**/*.ts",
+    "_layers/**/*.ts",
+    "tests/**/*.ts",
+    "tests/types/event-mocks.d.ts"
+  ]
+}
