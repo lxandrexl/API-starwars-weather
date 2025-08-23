@@ -8,19 +8,28 @@ La solución demuestra buenas prácticas de arquitectura (IoC, casos de uso), pr
 ## 🔎 Quickstart
 
 ```bash
-# 1) Instalar deps
+# 1) Instalar layers
+npm run build:core-layer
+
+# 2) Instalar deps
 npm install
 
-# 2) Correr unit tests (Jest)
+# 3) Empaquetar codigo
+npm run package
+
+# 4) Desplegar AWS
+npm run deploy
+
+# 5) Correr unit tests (Jest)
 npm test
 
-# 3) Correr escenarios BDD (Cucumber)
+# 6) Correr escenarios BDD (Cucumber)
 npm run bdd
 
-# 4) Levantar Swagger UI (OpenAPI docs)
+# 7) Levantar Swagger UI (OpenAPI docs)
 npm run documentation
 
-# 5) Levantar API en local (si tienes serverless-offline configurado)
+# 8) Levantar API en local (si tienes serverless-offline configurado)
 npm run offline
 ```
 
