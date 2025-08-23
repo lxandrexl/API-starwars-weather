@@ -33,7 +33,6 @@ export class FusionadosUseCase implements IUseCase<any, any> {
       };
 
     const result = await this._swapiDAO.getPlanetById(planetId);
-    console.log("results::getPlanetById", result);
     if (!result) {
       return {
         status: "not_found",
