@@ -1,16 +1,18 @@
 import { makeApiEvent } from "../../../../../tests/factories/api-event";
 import { CreateUser } from "./handler";
-
 jest.mock("core/xray-bootstrap", () => ({}), { virtual: true });
 
-// Mocks específicos de este spec
+const createUser = jest.fn();
 jest.mock("../../dao/auth", () => ({
-  AuthDAO: jest.fn().mockImplementation(() => ({
-    createUser: jest.fn().mockResolvedValue({ User: { Username: "u" } }),
-  })),
+  AuthDAO: jest.fn().mockImplementation(() => ({ createUser })),
 }));
 
 describe("CreateUserUseCase", () => {
+  beforeEach(() => {
+    createUser.mockReset();
+    createUser.mockResolvedValue({ User: { Username: "u" } });
+  });
+
   it("crea usuario en cognito", async () => {
     const event = makeApiEvent({
       httpMethod: "POST",
@@ -27,22 +29,20 @@ describe("CreateUserUseCase", () => {
         details: { User: { Username: "u" } },
       })
     );
+    expect(createUser).toHaveBeenCalledWith({
+      email: "a@b.com",
+      password: "Xyz11234",
+    });
   });
 
   it("retorna error si el usuario ya existe", async () => {
+    createUser.mockRejectedValueOnce(new Error("UserAlreadyExists"));
     const event = makeApiEvent({
       httpMethod: "POST",
       path: "/auth/register",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ email: "existe@b.com", password: "Xyz11234" }),
     });
-
-    // Sobreescribimos mock para este test
-    const { AuthDAO } = require("../../dao/auth");
-    (AuthDAO as jest.Mock).mockImplementation(() => ({
-      createUser: jest.fn().mockRejectedValue(new Error("UserAlreadyExists")),
-    }));
-
     const res = await CreateUser(event);
     const errorResponse = {
       error: {
@@ -65,7 +65,6 @@ describe("CreateUserUseCase", () => {
       headers: {},
       body: null,
     });
-
     const res = await CreateUser(event);
     const errorResponse = {
       error: {
