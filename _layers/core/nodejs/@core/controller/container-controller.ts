@@ -4,6 +4,11 @@ import { InternalError, UnprocessableEntityError } from "./exception";
 import { Container } from "inversify";
 import * as Qs from "qs";
 import { logger } from "../utils/logger";
+import * as dotenv from "dotenv";
+
+if (process.env.NODE_ENV === "local" || process.env.IS_OFFLINE === "true") {
+  dotenv.config({ path: ".env.local" });
+}
 
 export enum InputProcess {
   BODY,
@@ -47,11 +52,11 @@ export abstract class ContainerControllerExecutor {
 }
 
 export type GuardResponse = {
-  pass: boolean,
-  status: number,
-  data: any
-}
-export type Guard = (event : any) => Promise<GuardResponse>;
+  pass: boolean;
+  status: number;
+  data: any;
+};
+export type Guard = (event: any) => Promise<GuardResponse>;
 
 export class ContainerController {
   private _validator: Schema | undefined;
@@ -100,23 +105,23 @@ export class ContainerController {
     return this;
   }
 
-  setGuard(guard : Guard[]){
-    this._guards = [
-      ...this._guards,
-      ...guard
-    ];
+  setGuard(guard: Guard[]) {
+    this._guards = [...this._guards, ...guard];
     return this;
   }
 
   async call(event: any) {
     const reqId = event.requestContext?.requestId;
-    logger.info({ reqId, path: event.path, qs: event.queryStringParameters }, "request in");
+    logger.info(
+      { reqId, path: event.path, qs: event.queryStringParameters },
+      "request in"
+    );
     const securityHeaders = {
-      'X-Content-Type-Options': 'nosniff',
-      'X-XSS-Protection': '1; mode=block',
-      'X-Frame-Options': 'SAMEORIGIN',
-      'Referrer-Policy': 'no-referrer-when-downgrade',
-      'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
+      "X-Content-Type-Options": "nosniff",
+      "X-XSS-Protection": "1; mode=block",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Referrer-Policy": "no-referrer-when-downgrade",
+      "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
     };
     try {
       const input = event;
@@ -130,14 +135,14 @@ export class ContainerController {
       request.query = event.queryStringParameters ?? {};
       request.headers = event.headers ?? {};
       // Execute Guards
-      for(const element of this._guards){
-        const {data, pass, status} = await element(event);
-        if(!pass){
+      for (const element of this._guards) {
+        const { data, pass, status } = await element(event);
+        if (!pass) {
           return {
             statusCode: status,
             headers: securityHeaders,
-            body: JSON.stringify(data)
-          }; 
+            body: JSON.stringify(data),
+          };
         }
       }
       if (this._validator) {
@@ -160,14 +165,17 @@ export class ContainerController {
           headers: {
             "Access-Control-Allow-Origin": "*",
             "Access-Control-Allow-Credentials": true,
-            ...securityHeaders
+            ...securityHeaders,
           },
         };
       } else {
         return result;
       }
     } catch (e: any) {
-      logger.error({ reqId, err: e?.message, stack: e?.stack }, "request error");
+      logger.error(
+        { reqId, err: e?.message, stack: e?.stack },
+        "request error"
+      );
       const error = typeof e.render === "function" ? e.render() : null;
       if (this._interceptor) {
         return this._interceptor(error ?? e);
@@ -178,7 +186,7 @@ export class ContainerController {
           headers: {
             "Access-Control-Allow-Origin": "*",
             "Access-Control-Allow-Credentials": true,
-            ...securityHeaders
+            ...securityHeaders,
           },
         };
       } else {
@@ -190,7 +198,7 @@ export class ContainerController {
           headers: {
             "Access-Control-Allow-Origin": "*",
             "Access-Control-Allow-Credentials": true,
-            ...securityHeaders
+            ...securityHeaders,
           },
         };
       }

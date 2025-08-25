@@ -42,6 +42,8 @@ custom:
       dev: us-east-1
     stage:
       dev: dev
+  dotenv:
+    path: .env.local
   serverless-offline:
     httpPort: 4010
     websocketPort: 4011
