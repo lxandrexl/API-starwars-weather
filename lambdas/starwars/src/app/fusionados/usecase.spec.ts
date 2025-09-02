@@ -64,6 +64,35 @@ describe("FusionadosUseCase", () => {
     expect(putFusion).toHaveBeenCalledWith(1, expect.any(Object), 60 * 30);
   });
 
+  it("200 ok con weather null si no hay datos", async () => {
+    getFusionByPlanet.mockResolvedValueOnce(null);
+    getPlanetById.mockResolvedValueOnce({
+      name: "Tatooine",
+      climate: "arid",
+      terrain: "desert",
+      population: "200000",
+      url: "https://swapi.info/api/planets/1",
+    });
+    getCurrent.mockResolvedValueOnce(null);
+
+    const event = makeApiEvent({
+      httpMethod: "GET",
+      path: "/starwars/fusionados",
+      queryStringParameters: { planetId: "1" },
+    });
+
+    const res = await Fusionados(event as any);
+    const body = JSON.parse(res.body);
+
+    expect(res.statusCode).toBe(200);
+    expect(body).toMatchObject({
+      status: "ok",
+      cached: false,
+    });
+    expect(body.details.weather).toBeNull();
+    expect(putFusion).toHaveBeenCalledWith(1, expect.any(Object), 60 * 30);
+  });
+
   it("200 bad_request si planetId inválido", async () => {
     const event = makeApiEvent({
       httpMethod: "GET",

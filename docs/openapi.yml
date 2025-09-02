@@ -231,7 +231,8 @@ components:
                 data:
                   type: object
                   properties:
-                    challenge: { type: string, example: "NEW_PASSWORD_REQUIRED" }
+                    challenge:
+                      { type: string, example: "NEW_PASSWORD_REQUIRED" }
                     session: { type: string }
                     parameters:
                       type: object
@@ -256,10 +257,12 @@ components:
         details:
           type: object
           properties:
-            id: { type: string, example: "2eb7e841-f5a4-4c3e-845c-c82024c832fa" }
+            id:
+              { type: string, example: "2eb7e841-f5a4-4c3e-845c-c82024c832fa" }
 
     WeatherNow:
       type: object
+      nullable: true
       properties:
         temperature: { type: number, example: 28.7 }
         windspeed: { type: number, example: 13 }
@@ -271,13 +274,15 @@ components:
         id: { type: integer, example: 25 }
         name: { type: string, example: "Dantooine" }
         climate: { type: string, example: "temperate" }
-        terrain: { type: string, example: "oceans, savannas, mountains, grasslands" }
+        terrain:
+          { type: string, example: "oceans, savannas, mountains, grasslands" }
         population: { type: string, example: "1000" }
         weather: { $ref: "#/components/schemas/WeatherNow" }
         source:
           type: object
           properties:
-            planetUrl: { type: string, example: "https://swapi.info/api/planets/25" }
+            planetUrl:
+              { type: string, example: "https://swapi.info/api/planets/25" }
 
     FusionadoResult:
       type: object
@@ -306,7 +311,8 @@ components:
         source:
           type: object
           properties:
-            planetUrl: { type: string, example: "https://swapi.info/api/planets/24" }
+            planetUrl:
+              { type: string, example: "https://swapi.info/api/planets/24" }
 
     HistorialPage:
       type: object
